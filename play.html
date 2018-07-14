@@ -1,0 +1,97 @@
+<script src=jquery.min.js></script>
+
+<style>
+body {
+  font-family: arial;
+}
+.container {
+  margin: auto;
+  text-align: center;
+}
+.gameWord {
+  border: 1px solid black;
+  width: 400px;
+  height: 400px;
+  line-height: 400px;
+  font-size: 30px;
+  text-align: center;
+  display: inline-block;
+}
+</style>
+
+<div class=container>
+  <div class=gameWord>
+  </div>
+  <br>
+  <button class=newGame>New Game</button>
+  <button class=nextWord>Next Word</button>
+</div>
+
+<script>
+const shiftAmount = 1;
+const wordCount = 5;
+
+$(function() {
+  let currentWord = 0, gameWords = [];
+  let wordList = getWordList();
+  wordList = wordList.map(function(word) {
+    word = decodeURI(word);
+    word = ceasarShift(word, -shiftAmount);
+    word = word.toLocaleUpperCase();
+    return word;
+  });
+  newGame();
+
+  $('.newGame').click(newGame);
+  $('.nextWord').click(nextWord);
+
+  function newGame() {
+    gameWords = getRandom(wordList, wordCount);
+    currentWord = 0;
+    $('.gameWord').text(gameWords[currentWord]);
+  }
+
+  function nextWord(event) {
+    currentWord++;
+    if (currentWord < wordCount) {
+      $('.gameWord').text(gameWords[currentWord]);
+    } else {
+      $('.gameWord').text('Game Over!');
+    }
+  }
+});
+
+
+function getWordList() {
+  const search = window.location.search;
+  const params = search.substring(search.indexOf('=') + 1);
+  return params.split('+');
+}
+
+function ceasarShift(text, shift) {
+  let newText = '';
+  for (let i = 0; i < text.length; i++) {
+    newText += ceasarShiftChar(text[i], shift);
+  }
+  return newText;
+}
+
+function ceasarShiftChar(char, shift) {
+  const code = char.charCodeAt(0);
+  return String.fromCharCode(code + shift);
+}
+
+function getRandom(arr, n) {
+    var result = new Array(n),
+        len = arr.length,
+        taken = new Array(len);
+    if (n > len)
+        throw new RangeError("getRandom: more elements taken than available");
+    while (n--) {
+        var x = Math.floor(Math.random() * len);
+        result[n] = arr[x in taken ? taken[x] : x];
+        taken[x] = --len in taken ? taken[len] : len;
+    }
+    return result;
+}
+</script>
